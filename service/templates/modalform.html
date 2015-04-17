@@ -1,0 +1,95 @@
+{% for service in services %}
+
+    <div class="modal fade bs-example-modal-lg" id="modalOrder{{ service.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <form action="{% url 'submit' %}" class="send-order-data-form" method="post">
+                {% csrf_token%}
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalOrderLabel">Заказ услуги {{ service.title }} </h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <table class="table table-striped">
+                            <input name="service" type="hidden" value="{{ service.unnumber }}"/>
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Цена</th>
+                                    <th>Выбор</th>
+                                    <th>Примечание</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for uservice in uservices_list %}
+                                    {% if service.id == uservice.7 %}
+                                        <tr>
+                                            <td>{{ uservice.1 }}</td>
+                                            <td>{{ uservice.3 }} руб.{% if uservice.4 %}/
+                                                {% if uservice.4 == 'HOUR' %}
+                                                    Час
+                                                {% elif uservice.4 == 'FLOOR' %}
+                                                    Этаж
+                                                {% elif uservice.4 == 'SMETR' %}
+                                                    Кв.метр
+                                                {% elif uservice.4 == 'DOT' %}
+                                                    Точка
+                                                {% elif uservice.4 == 'ITEM' %}
+                                                    Шт.
+                                                {% elif uservice.4 == 'KG' %}
+                                                    Кг
+                                                {% elif uservice.4 == 'L' %}
+                                                    Литр
+                                                {% endif %}
+                                            {% endif %}
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" name="{{ uservice.2 }}" id="{{ uservice.2 }}"/>
+                                            </td>
+                                            <td>{{ uservice.5 }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <div class="form-group">
+                            <span class="modal__caption">
+                                Укажите ваши данные для связи
+                            </span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputPhone">Номер телефона</label>
+                            <input name="inputPhone" type="text" class="form-control" id="inputPhone" placeholder="Укажите номер телефона">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputEmail">Email адрес</label>
+                            <input name="inputEmail" type="email" class="form-control" id="inputEmail" placeholder="Введите email">
+                        </div>
+                        {% if email %}
+                            {{ email }}
+                        {% endif %}
+                        <p class="text-center" id="error-div"></p>
+                        {% if text_error %}
+                            <p class="bg-danger">{{ text_error }}</p>
+                        {% endif %}
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                        <button type="button" class="btn btn-primary do-order-btn">Оформить заказ</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    {% endfor %}
