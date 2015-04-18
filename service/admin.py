@@ -1,6 +1,6 @@
 from django.contrib import admin
 from header.models import Logo, Contact, ModalContact
-from service.models import Service, UServices, Cooperation
+from service.models import Service, UServices, Cooperation, History
 from slider.models import SlideHead, SlideList, SlideReview
 from PanelTabs.models import TabItem, TabItemList
 
@@ -35,12 +35,19 @@ class ServiceAdmin(admin.ModelAdmin):
         UServicesInline,
     ]
 
+class HistoryAdmin(admin.ModelAdmin):
+    list_display = ('service', 'uservice', 'phone', 'email', 'date', 'complete')
+    list_filter = ('service', 'date', 'complete',)
+
+
+
 
 admin.site.register(SlideReview)
 admin.site.register(Logo)
 admin.site.register(Contact)
 admin.site.register(Service, ServiceAdmin)
 admin.site.register(Cooperation)
+admin.site.register(History, HistoryAdmin)
 admin.site.register(SlideHead, SlideHeadAdmin)
 admin.site.register(ModalContact)
 admin.site.register(TabItem, TabItemAdmin)

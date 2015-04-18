@@ -3,7 +3,7 @@ from django.http.response import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render_to_response, redirect
 from header.models import Logo, Contact, ModalContact
 from django.template.loader import render_to_string
-from service.models import Service, UServices, Cooperation
+from service.models import Service, UServices, Cooperation, History
 from slider.models import SlideHead, SlideList, SlideReview
 from PanelTabs.models import TabItem, TabItemList
 from django.core.context_processors import csrf
@@ -64,22 +64,66 @@ def submit(request):
         if request.method == 'POST':
             uservice = request.POST.get('service', '')
             email = request.POST.get('inputEmail', '')
-            # phone = request.POST.get('inputPhone', '')
+            phone = request.POST.get('inputPhone', '')
             service = Service.objects.get(unnumber=uservice)
             service_uni = service.title
             lists = dict(request.POST)
 
+            # пример строки SMS сообщения
+            # "serv1;pusl1;pusl4;922204922;taksenov@gmail.com"
+
+
+            # stroka = "''"
+            # i = 0
+            #
+            # for key, value in lists.items():
+            #     if value == ['on']:
+            #         i = i + 1
+            #         print key
+            #
+            #         print type(key)
+            #
+            #         stroka = stroka + ", '" + key + "'"
+            #
+            #         print('---------------')
+            #         print(stroka)
+            #         print(type(stroka))
+            #
+            # print(stroka)
+            i = 0
+            list = []
+            for key, value in lists.items():
+                # list = []
+                if value == ['on']:
+                    list.append(key)
+                    i = i + 1
+                    print(list)
+            print(list)
+
+            service_title = UServices.objects.filter(unnumber__in=list)
+
+            history = History(
+                service=service_uni,
+                uservice=service_title,
+                phone=request.POST.get('inputPhone', ''),
+                email=request.POST.get('inputEmail', ''),
+            )
+
+            history.save()
+
+            # service_title = connection.cursor()
+            # service_title.execute("""
+            #     SELECT title FROM favorit.uservices
+            #     WHERE uservices.unnumber IN (%s)
+            # """, [stroka])
+            # serv_title = service_title.fetchall()
+
+
             subject = u"Заявка на услугу %s" % service_uni
+            msg = "Были заказаны услуги: %s" % service_title
+            send_mail(subject, msg, 'naysayer94@gmail.com', [email])
 
-            def keys(list):
-                for key, value in list.items():
-                    if value == ['on']:
-                        return key
-                    return key
-
-            val = keys(lists)
-
-            print(val)
+            # print(val)
             # for key, value in lists.items():
             #     if value == ['on']:
             #         change = UServices.objects.get(unnumber=key)

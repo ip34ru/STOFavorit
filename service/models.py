@@ -59,3 +59,20 @@ class Cooperation(models.Model):
         verbose_name_plural = "Сотрудничество"
 
     text = models.TextField(verbose_name="Ваш текст")
+
+
+class History(models.Model):
+    class Meta():
+        db_table = 'history'
+        verbose_name = 'История заказов'
+        verbose_name_plural = 'История заказов'
+
+    service = models.CharField(max_length=100, verbose_name="Услуга")
+    uservice = models.CharField(max_length=255, verbose_name="Выбранные подуслуги")
+    phone = models.CharField(max_length=15, verbose_name="Телефон")
+    email = models.EmailField(verbose_name="E-mail", null=True, blank=True)
+    date = models.DateTimeField(auto_now_add=True, verbose_name="Дата заказа")
+    complete = models.BooleanField(default=False, verbose_name="Выполнен?")
+
+    def __unicode__(self):
+        return self.service
