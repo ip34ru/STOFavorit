@@ -125,8 +125,8 @@ def callback(request):
         sender = 'naysayer94@gmail.com'
 
         subject = u"Заказ обратного звонка %s" % phone
-        msg = u"Перезвоните мне пожалуйста на номер:  %s" % phone
-        sms_msg = u"Please contact me:  %s" % phone
+        msg = u"Перезвоните мне пожалуйста на номер: %s" % phone
+        sms_msg = u"Please contact me: %s" % phone
 
         send_mail(subject, msg, sender, [sender])
         # cli = smsru.Client()

@@ -16,6 +16,7 @@
 
             _this.setUpListeners();
 
+            app.checkValue = 0;
         },
          // -- инициализация при загрузке js
 
@@ -46,11 +47,16 @@
             $('.do-order-btn').on('click', app.sendOrderData);
             // -- нажата кнопка заказа услуги
 
+            // -- нажата кнопка заказа обратного звонка
+            $('.do-call-btn').on('click', app.sendCallBack);
+            // -- нажата кнопка заказа обратного звонка
 
             // -- когда закрывается модальное окно
             $('.modal').on('hide.bs.modal', function (e) {
                 $('.modal').find('#error-div').removeClass('bg-success').removeClass('bg-danger').text('');
                 $('.form-control').val('');
+                $('.modal').find(".checkbox-userv").removeAttr("checked");
+                app.checkValue = 0;
             });
             // -- когда закрывается модальное окно
 
@@ -59,33 +65,39 @@
 
         // -- функции вызываемые из setUpListeners ===============
 
-
          // -- отправка данных из модальной формы обратного звонка
-        CallBack: function (e) {
+        sendCallBack: function (e) {
             e.preventDefault();
 
             var form = $(this).parents('.modal-content').find('.form_callback'),
                 str = '',
+                valPhone = $(this).parents('.modal-content').find('#inputPhoneCallBack').val(),
+                rePhone = /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/,
+                submitBtn =  $(this).parents('.modal-content').find('.do-call-btn');
 
-                submitBtn =  $(this).parents('.modal-content').find('.do-call-btn'),
-                val =  $(this).parents('.modal-content').find('#inputPhoneCallBack').val();
-
-            console.log(val);
-
-            if(val.length === 0){
+            if(valPhone.length === 0){
                 $(this).parents('.modal-content').find('#error-div').removeClass('bg-success').addClass('bg-danger').text('Необходимо ввести номер телефона!');
                 return false;
+            } else {
+                var validPhone = rePhone.test(valPhone);
+                if (!validPhone) {
+                    $(this).parents('.modal-content').find('#error-div').removeClass('bg-success').addClass('bg-danger').text('Необходимо ввести правильный номер телефона!');
+                    return false;
+                }
             }
+            valPhone = valPhone.replace(/[+()-]/g, "");
 
             submitBtn.attr({disabled: 'disabled'}); // защита от повторного нажатия + показываем загрузчик
             str = form.serialize();
+            str = str + 'inputPhoneCallBack=' + valPhone;
+
             $.ajax({
                 type: "POST",
                 url: "/callback",
                 dataType: 'json',
                 data: str
             }).done(
-                $(this).parents('.modal-content').find('#error-div').removeClass('bg-danger').addClass('bg-success').text('Ваша заявка принята!')
+                $(this).parents('.modal-content').find('#error-div').removeClass('bg-danger').addClass('bg-success').text('Ваша заявка принята! В ближайшее время с вами свяжется наш менеджер.')
             ).always(function(){
                 submitBtn.removeAttr('disabled');
             });
@@ -99,30 +111,60 @@
 
             var form = $(this).parents('.modal-content').find('.send-order-data-form'),
                 str = '',
-                //modalDialog = $('.modal-dialog'),
-                submitBtn =  $(this).parents('.modal-content').find('.do-order-btn'),
-                val =  $(this).parents('.modal-content').find('#inputPhone').val();
+                submitBtn = $(this).parents('.modal-content').find('.do-order-btn'),
+                checkBoxes = $(this).parents('.modal-content').find(".checkbox-userv"),
+                valPhone = $(this).parents('.modal-content').find('#inputPhone').val(),
+                rePhone = /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/,
+                valEmail =  $(this).parents('.modal-content').find('#inputEmail').val(),
+                reEmail = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
 
-            console.log(val);
+            $.each( checkBoxes , function(index, val) {
+                var currentItem = $(val);
+                    if (currentItem.prop("checked")) {
+                        app.checkValue = app.checkValue + 1
+                    }
+            });
 
-            if(val.length === 0){
+            if ( app.checkValue === 0 ) {
+                $(this).parents('.modal-content').find('#error-div').removeClass('bg-success').addClass('bg-danger').text('Для заказа нужно выбрать хотя бы одну услугу!');
+                return false
+            }
+
+            if(valPhone.length === 0){
                 $(this).parents('.modal-content').find('#error-div').removeClass('bg-success').addClass('bg-danger').text('Необходимо ввести номер телефона!');
                 return false;
+            } else {
+                var validPhone = rePhone.test(valPhone);
+                if (!validPhone) {
+                    $(this).parents('.modal-content').find('#error-div').removeClass('bg-success').addClass('bg-danger').text('Необходимо ввести правильный номер телефона!');
+                    return false;
+                }
+            }
+            valPhone = valPhone.replace(/[+()-]/g, "");
+
+            if (valEmail.length != 0) {
+                var validEmail = reEmail.test(valEmail);
+                if (!validEmail) {
+                    $(this).parents('.modal-content').find('#error-div').removeClass('bg-success').addClass('bg-danger').text('Адрес электронной почты не соотвествует формату. Введите правильный email!');
+                    return false;
+                }
             }
 
             submitBtn.attr({disabled: 'disabled'}); // защита от повторного нажатия + показываем загрузчик
             str = form.serialize();
+            str = str + '&inputPhone=' + valPhone;
+
+            app.checkValue = 0;
             $.ajax({
                 type: "POST",
                 url: "/submit",
                 dataType: 'json',
                 data: str
             }).done(
-                $(this).parents('.modal-content').find('#error-div').removeClass('bg-danger').addClass('bg-success').text('Ваша заявка принята!')
+                $(this).parents('.modal-content').find('#error-div').removeClass('bg-danger').addClass('bg-success').text('Ваша заявка принята! В ближайшее время с вами свяжется наш менеджер.')
             ).always(function(){
                 submitBtn.removeAttr('disabled');
             });
-
         },
         // -- отправка данных из модальной формы
 
