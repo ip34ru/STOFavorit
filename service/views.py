@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.http.response import HttpResponse, HttpResponseNotFound
+from django.http.response import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render_to_response, redirect
 from header.models import Logo, Contact, ModalContact
 from django.template.loader import render_to_string
@@ -10,7 +10,7 @@ from django.core.context_processors import csrf
 from django.db import connection
 import json
 from django.core.mail import send_mail, BadHeaderError
-import smsru
+#import smsru
 
 
 
@@ -69,69 +69,45 @@ def submit(request):
             service_uni = service.title
             lists = dict(request.POST)
 
-            # пример строки SMS сообщения
-            # "serv1;pusl1;pusl4;922204922;taksenov@gmail.com"
+            sms_msg = uservice + ';'
+            stroka = ""
 
-
-            # stroka = "''"
-            # i = 0
-            #
-            # for key, value in lists.items():
-            #     if value == ['on']:
-            #         i = i + 1
-            #         print key
-            #
-            #         print type(key)
-            #
-            #         stroka = stroka + ", '" + key + "'"
-            #
-            #         print('---------------')
-            #         print(stroka)
-            #         print(type(stroka))
-            #
-            # print(stroka)
-            i = 0
             list = []
             for key, value in lists.items():
-                # list = []
                 if value == ['on']:
                     list.append(key)
-                    i = i + 1
-                    print(list)
-            print(list)
+                    sms_msg = sms_msg + key + ';'
 
             service_title = UServices.objects.filter(unnumber__in=list)
 
+            for item in service_title:
+                stroka = stroka + item.title + '; '
+
+            service_title = stroka
+
+            # формируем данные для почты и для sms
+            subject = u"Заявка на услугу %s" % service_uni
+            msg = u"Были заказаны услуги: %s" % service_title
+            msg = msg + u'\n' + u'Клиент: телефон = ' + phone + u'; email = ' + email
+            sms_msg = sms_msg + phone + ';' + email
+
+            # пример строки SMS сообщения
+            # "serv1;pusl1;pusl4;922204922;taksenov@gmail.com"
+
+            # Отправка email и sms сообщения
+            # send_mail(subject, msg, 'naysayer94@gmail.com', [email])
+            # cli = smsru.Client()
+            # cli.send("+79888963922", sms_msg)
+
+            # записываем данные в таблицу с историей заявок
             history = History(
                 service=service_uni,
                 uservice=service_title,
                 phone=request.POST.get('inputPhone', ''),
                 email=request.POST.get('inputEmail', ''),
             )
-
             history.save()
 
-            # service_title = connection.cursor()
-            # service_title.execute("""
-            #     SELECT title FROM favorit.uservices
-            #     WHERE uservices.unnumber IN (%s)
-            # """, [stroka])
-            # serv_title = service_title.fetchall()
-
-
-            subject = u"Заявка на услугу %s" % service_uni
-            msg = "Были заказаны услуги: %s" % service_title
-            send_mail(subject, msg, 'naysayer94@gmail.com', [email])
-
-            # print(val)
-            # for key, value in lists.items():
-            #     if value == ['on']:
-            #         change = UServices.objects.get(unnumber=key)
-            #         subject = u"Заявка на услугу %s" % service_uni
-            #         msg = u"Была заказана услуга %s" % change
-            #         send_mail(subject, msg, 'naysayer94@gmail.com', [email])
-            #         cli = smsru.Client()
-            #         cli.send("+79888963922", msg)
             return HttpResponse("POST")
         else:
             return HttpResponseNotFound('<h1>Page not found</h1>')
@@ -150,8 +126,11 @@ def callback(request):
 
         subject = u"Заказ обратного звонка %s" % phone
         msg = u"Перезвоните мне пожалуйста на номер:  %s" % phone
+        sms_msg = u"Please contact me:  %s" % phone
 
         send_mail(subject, msg, sender, [sender])
+        # cli = smsru.Client()
+        # cli.send("+79888963922", sms_msg)
         return HttpResponse("POST")
     else:
         return HttpResponseNotFound('<h1>Page not found</h1>')
