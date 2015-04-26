@@ -226,12 +226,16 @@
                                 </div>
                                 <div class="slider-block__list">
                                     <ul>
-                                        {% for list in slide_list %}
+                                        {% for list in all_slides_list %}
+                                            {% if slide.id == list.2 %}
                                         <li>
                                             <span>
-                                               {{ list.list }}
+                                               {{ list.1 }}
                                             </span>
                                         </li>
+                                            {% else %}
+
+                                        {% endif %}
                                         {% endfor %}
                                     </ul>
                                 </div>
