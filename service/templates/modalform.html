@@ -18,7 +18,7 @@
                             <thead>
                                 <tr>
                                     <th>Название</th>
-                                    <th>Цена</th>
+                                    <th width="15%">Цена</th>
                                     <th>Выбор</th>
                                     <th>Примечание</th>
                                 </tr>
@@ -28,21 +28,23 @@
                                     {% if service.id == uservice.7 %}
                                         <tr>
                                             <td>{{ uservice.1 }}</td>
-                                            <td>{{ uservice.3 }} руб.{% if uservice.4 %}/
+                                            <td> {{ uservice.3 }} {% if uservice.4 %}руб./
                                                 {% if uservice.4 == 'HOUR' %}
-                                                    Час
+                                                    час
                                                 {% elif uservice.4 == 'FLOOR' %}
-                                                    Этаж
+                                                    этаж
                                                 {% elif uservice.4 == 'SMETR' %}
-                                                    Кв.метр
+                                                    кв.метр
                                                 {% elif uservice.4 == 'DOT' %}
-                                                    Точка
+                                                    точка
                                                 {% elif uservice.4 == 'ITEM' %}
-                                                    Шт.
+                                                    шт.
                                                 {% elif uservice.4 == 'KG' %}
-                                                    Кг
+                                                    кг.
                                                 {% elif uservice.4 == 'L' %}
-                                                    Литр
+                                                    литр
+                                                {% elif uservice.4 == 'LMETR' %}
+                                                    метр
                                                 {% endif %}
                                             {% endif %}
                                             </td>

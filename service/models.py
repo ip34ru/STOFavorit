@@ -12,10 +12,10 @@ class Service(models.Model):
         verbose_name_plural = "Услуги"
 
 
-    title = models.CharField(max_length=50, verbose_name="Название")
+    title = models.CharField(max_length=255, verbose_name="Название")
     unnumber = models.CharField(max_length=20, verbose_name="Уникальный идентификатор", null=True)
     description = models.TextField(verbose_name="Описание")
-    photo = models.CharField(max_length=100, verbose_name="Изображение", null=True)
+    photo = models.CharField(max_length=255, verbose_name="Изображение", null=True)
 
     def __unicode__(self):
         return self.title
@@ -30,17 +30,18 @@ class UServices(models.Model):
 
 
     MEASURE_CHOICES = (
-        (None, 'Нет'),
-        ('HOUR', 'Час'),
-        ('FLOOR', 'Этаж'),
-        ('SMETR', 'Кв.метр'),
-        ('DOT', 'Точка'),
-        ('ITEM', 'Шт'),
-        ('KG', 'Кг'),
-        ('L', 'Литр'),
+        (None, 'нет'),
+        ('HOUR', 'час'),
+        ('FLOOR', 'этаж'),
+        ('SMETR', 'кв.метр'),
+        ('DOT', 'точка'),
+        ('ITEM', 'шт.'),
+        ('KG', 'кг.'),
+        ('L', 'литр'),
+        ('LMETR', 'метр'),
     )
 
-    title = models.CharField(max_length=50, verbose_name="Название")
+    title = models.CharField(max_length=255, verbose_name="Название")
     unnumber = models.CharField(max_length=20, verbose_name="Уникальный идентификатор", null=True)
     price = models.CharField(max_length=20, verbose_name="Цена")
     measure = models.CharField(max_length=10, choices=MEASURE_CHOICES, default=None, verbose_name="Ед. измерения", null=True, blank=True)
@@ -67,7 +68,7 @@ class History(models.Model):
         verbose_name = 'История заказов'
         verbose_name_plural = 'История заказов'
 
-    service = models.CharField(max_length=100, verbose_name="Услуга")
+    service = models.CharField(max_length=255, verbose_name="Услуга")
     uservice = models.CharField(max_length=255, verbose_name="Выбранные подуслуги")
     phone = models.CharField(max_length=15, verbose_name="Телефон")
     email = models.EmailField(verbose_name="E-mail", null=True, blank=True)
