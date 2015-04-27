@@ -166,8 +166,8 @@ def submitip34(request):
             service_title = stroka
 
             # формируем данные для почты и для sms
-            subject = u"Заявка на услугу %s" % service_uni
-            msg = u"Были заказаны услуги: %s" % service_title
+            subject = u"Заявка на IT-автоматизацию %s" % service_uni
+            msg = u"Прошу вас связаться со мной, я хочу заказать услуги по IT-автоматизации. "
             msg = msg + u'\n' + u'Клиент: телефон = ' + phone + u'; email = ' + email
             # sms_msg = sms_msg + phone + ';' + email
 
