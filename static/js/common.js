@@ -164,7 +164,7 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "/submitip34",
+                    url: "/ip34",
                     dataType: 'json',
                     data: str
                 }).done(

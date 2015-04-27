@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
-from django.http.response import HttpResponse, HttpResponseNotFound, Http404
-from django.shortcuts import render_to_response, redirect
+from django.http.response import HttpResponse, HttpResponseNotFound
+from django.shortcuts import render_to_response
 from header.models import Logo, Contact, ModalContact
-from django.template.loader import render_to_string
 from service.models import Service, UServices, Cooperation, History
-from slider.models import SlideHead, SlideList, SlideReview
-from PanelTabs.models import TabItem, TabItemList
+from slider.models import SlideHead, SlideReview
+from PanelTabs.models import TabItem
 from django.core.context_processors import csrf
 from django.db import connection
-import json
-from django.core.mail import send_mail, BadHeaderError
-#import smsru
-
-
+from django.core.mail import send_mail
+import smsru
 
 
 # Create your views here.
@@ -91,13 +87,11 @@ def submit(request):
             msg = msg + u'\n' + u'Клиент: телефон = ' + phone + u'; email = ' + email
             sms_msg = sms_msg + phone + ';' + email
 
-            # пример строки SMS сообщения
-            # "serv1;pusl1;pusl4;922204922;taksenov@gmail.com"
-
             # Отправка email и sms сообщения
-            # send_mail(subject, msg, 'naysayer94@gmail.com', [email])
-            # cli = smsru.Client()
-            # cli.send("+79888963922", sms_msg)
+            send_mail(subject, msg, 'taksenov@gmail.com', ['taksenov@gmail.com', 'servicecenter86@bk.ru'])
+
+            cli = smsru.Client()
+            cli.send("+79088892071", sms_msg)
 
             # записываем данные в таблицу с историей заявок
             history = History(
@@ -112,81 +106,46 @@ def submit(request):
         else:
             return HttpResponseNotFound('<h1>Page not found</h1>')
 
-    # вот здесь написано как работать с json в пайтоне
-    # http://stackoverflow.com/questions/28621736/querydict-to-string-loses-list-within-json
-    # pip install python-smsru
-    # https://bitbucket.org/umonkey/python-smsru/src/58afd7dc1fae?at=default настройка
 
 # Форма зазать обратный звонок
+
 
 def callback(request):
     if request.is_ajax() and request.method == 'POST':
         phone = request.POST.get('inputPhoneCallBack', '')
-        sender = 'naysayer94@gmail.com'
+        sender = 'servicecenter86@bk.ru'
 
         subject = u"Заказ обратного звонка %s" % phone
         msg = u"Перезвоните мне пожалуйста на номер: %s" % phone
         sms_msg = u"Please contact me: %s" % phone
 
-        send_mail(subject, msg, sender, [sender])
-        # cli = smsru.Client()
-        # cli.send("+79888963922", sms_msg)
+        send_mail(subject, msg, 'taksenov@gmail.com', [sender])
+
+        cli = smsru.Client()
+        cli.send("+79088892071", sms_msg)
+
         return HttpResponse("POST")
     else:
         return HttpResponseNotFound('<h1>Page not found</h1>')
 
+
 # здесь только отправка электронной почты на мой ящик taksenov@gmail.com
-def submitip34(request):
+def ip34(request):
     args = {}
     args.update((csrf(request)))
 
     if request.is_ajax():
         if request.method == 'POST':
-            uservice = request.POST.get('service', '')
             email = request.POST.get('inputEmail', '')
             phone = request.POST.get('inputPhone', '')
-            service = Service.objects.get(unnumber=uservice)
-            service_uni = service.title
-            lists = dict(request.POST)
-
-            sms_msg = uservice + ';'
-            stroka = ""
-
-            list = []
-            for key, value in lists.items():
-                if value == ['on']:
-                    list.append(key)
-                    sms_msg = sms_msg + key + ';'
-
-            service_title = UServices.objects.filter(unnumber__in=list)
-
-            for item in service_title:
-                stroka = stroka + item.title + '; '
-
-            service_title = stroka
 
             # формируем данные для почты и для sms
-            subject = u"Заявка на IT-автоматизацию %s" % service_uni
+            subject = u"Заявка на IT-автоматизацию"
             msg = u"Прошу вас связаться со мной, я хочу заказать услуги по IT-автоматизации. "
             msg = msg + u'\n' + u'Клиент: телефон = ' + phone + u'; email = ' + email
-            # sms_msg = sms_msg + phone + ';' + email
-
-            # пример строки SMS сообщения
-            # "serv1;pusl1;pusl4;922204922;taksenov@gmail.com"
 
             # Отправка email и sms сообщения
-            # send_mail(subject, msg, 'naysayer94@gmail.com', [email])
-            # cli = smsru.Client()
-            # cli.send("+79888963922", sms_msg)
-
-            # записываем данные в таблицу с историей заявок
-            history = History(
-                service=service_uni,
-                uservice=service_title,
-                phone=request.POST.get('inputPhone', ''),
-                email=request.POST.get('inputEmail', ''),
-            )
-            history.save()
+            send_mail(subject, msg, 'taksenov@gmail.com', ['taksenov@gmail.com'])
 
             return HttpResponse("POST")
         else:
