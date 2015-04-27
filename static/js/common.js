@@ -119,12 +119,13 @@
                 reEmail = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i,
                 theActiveId = $(this).parents('.bs-example-modal-lg').attr('id'); // выбираем id активного элемента;
 
-            console.log( theActiveId );
+            // костылик, если моя модалка то сделать якобы выбранную одну услугу
+            if ( theActiveId === 'modalOrder10' ) { app.checkValue = 1 }
 
             $.each( checkBoxes , function(index, val) {
                 var currentItem = $(val);
                     if (currentItem.prop("checked")) {
-                        app.checkValue = app.checkValue + 1
+                        app.checkValue++
                     }
             });
 
