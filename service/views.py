@@ -90,6 +90,7 @@ def submit(request):
             # Отправка email и sms сообщения
             send_mail(subject, msg, 'taksenov@gmail.com', ['taksenov@gmail.com', 'servicecenter86@bk.ru'])
 
+            # указан номер телефона владельца бизнеса, он же регистрируется на sms.ru и платит за смс сообщения
             cli = smsru.Client()
             cli.send("+79088892071", sms_msg)
 
@@ -108,8 +109,6 @@ def submit(request):
 
 
 # Форма зазать обратный звонок
-
-
 def callback(request):
     if request.is_ajax() and request.method == 'POST':
         phone = request.POST.get('inputPhoneCallBack', '')
