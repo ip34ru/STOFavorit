@@ -27,9 +27,9 @@
             $('.scroll-services__link').on('click', app.scrollToServices);
             // -- слайдер к блоку с контактами
 
-            // -- слайдер к блоку с контактами
+            // -- слайдер к блоку о сотрудничестве
             $('.scroll-cooperartion__link').on('click', app.scrollToCooperation);
-            // -- слайдер к блоку с контактами
+            // -- слайдер к блоку о сотрудничестве
 
             // -- слайдер к блоку с инфой о компании
             $('.scroll-about_company__link').on('click', app.scrollToSlider);
@@ -116,7 +116,10 @@
                 valPhone = $(this).parents('.modal-content').find('#inputPhone').val(),
                 rePhone = /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/,
                 valEmail =  $(this).parents('.modal-content').find('#inputEmail').val(),
-                reEmail = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+                reEmail = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i,
+                theActiveId = $(this).parents('.bs-example-modal-lg').attr('id'); // выбираем id активного элемента;
+
+            console.log( theActiveId );
 
             $.each( checkBoxes , function(index, val) {
                 var currentItem = $(val);
@@ -155,16 +158,35 @@
             str = str + '&inputPhone=' + valPhone;
 
             app.checkValue = 0;
-            $.ajax({
-                type: "POST",
-                url: "/submit",
-                dataType: 'json',
-                data: str
-            }).done(
-                $(this).parents('.modal-content').find('#error-div').removeClass('bg-danger').addClass('bg-success').text('Ваша заявка принята! В ближайшее время с вами свяжется наш менеджер.')
-            ).always(function(){
-                submitBtn.removeAttr('disabled');
-            });
+
+            if ( theActiveId === 'modalOrder10' ) {
+
+                $.ajax({
+                    type: "POST",
+                    url: "/submitip34",
+                    dataType: 'json',
+                    data: str
+                }).done(
+                    $(this).parents('.modal-content').find('#error-div').removeClass('bg-danger').addClass('bg-success').text('Ваша заявка принята! В ближайшее время с вами свяжется наш менеджер.')
+                ).always(function(){
+                    submitBtn.removeAttr('disabled');
+                });
+
+            } else {
+
+                $.ajax({
+                    type: "POST",
+                    url: "/submit",
+                    dataType: 'json',
+                    data: str
+                }).done(
+                    $(this).parents('.modal-content').find('#error-div').removeClass('bg-danger').addClass('bg-success').text('Ваша заявка принята! В ближайшее время с вами свяжется наш менеджер.')
+                ).always(function(){
+                    submitBtn.removeAttr('disabled');
+                });
+
+            }
+
         },
         // -- отправка данных из модальной формы
 

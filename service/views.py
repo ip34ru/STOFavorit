@@ -135,3 +135,60 @@ def callback(request):
     else:
         return HttpResponseNotFound('<h1>Page not found</h1>')
 
+# здесь только отправка электронной почты на мой ящик taksenov@gmail.com
+def submitip34(request):
+    args = {}
+    args.update((csrf(request)))
+
+    if request.is_ajax():
+        if request.method == 'POST':
+            uservice = request.POST.get('service', '')
+            email = request.POST.get('inputEmail', '')
+            phone = request.POST.get('inputPhone', '')
+            service = Service.objects.get(unnumber=uservice)
+            service_uni = service.title
+            lists = dict(request.POST)
+
+            sms_msg = uservice + ';'
+            stroka = ""
+
+            list = []
+            for key, value in lists.items():
+                if value == ['on']:
+                    list.append(key)
+                    sms_msg = sms_msg + key + ';'
+
+            service_title = UServices.objects.filter(unnumber__in=list)
+
+            for item in service_title:
+                stroka = stroka + item.title + '; '
+
+            service_title = stroka
+
+            # формируем данные для почты и для sms
+            subject = u"Заявка на услугу %s" % service_uni
+            msg = u"Были заказаны услуги: %s" % service_title
+            msg = msg + u'\n' + u'Клиент: телефон = ' + phone + u'; email = ' + email
+            # sms_msg = sms_msg + phone + ';' + email
+
+            # пример строки SMS сообщения
+            # "serv1;pusl1;pusl4;922204922;taksenov@gmail.com"
+
+            # Отправка email и sms сообщения
+            # send_mail(subject, msg, 'naysayer94@gmail.com', [email])
+            # cli = smsru.Client()
+            # cli.send("+79888963922", sms_msg)
+
+            # записываем данные в таблицу с историей заявок
+            history = History(
+                service=service_uni,
+                uservice=service_title,
+                phone=request.POST.get('inputPhone', ''),
+                email=request.POST.get('inputEmail', ''),
+            )
+            history.save()
+
+            return HttpResponse("POST")
+        else:
+            return HttpResponseNotFound('<h1>Page not found</h1>')
+

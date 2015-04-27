@@ -1,0 +1,76 @@
+{% for service in services %}
+
+    {% if service.id == 10 %}
+
+        <div class="modal fade bs-example-modal-lg" id="modalOrder10" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+
+                    <form action="{% url 'submit' %}" class="send-order-data-form" method="post">
+                    {% csrf_token%}
+
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="modalOrderLabel"><strong>{{ service.title }}</strong> &mdash; комплексные услуги по автоматизации вашего бизнеса </h4>
+                        </div>
+
+                        <div class="modal-body table-responsive">
+                            <table class="table table-striped">
+                                <input name="service" type="hidden" value="{{ service.unnumber }}"/>
+                                <thead>
+                                    <tr>
+                                        <th>Мы предлагаем вам:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for uservice in uservices_list %}
+                                        {% if service.id == uservice.7 %}
+                                            <tr>
+                                                <td>{{ uservice.1 }}</td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                            <div class="form-group">
+                                <span class="modal__caption">
+                                    Вы можете связаться с нами по номеру телефона: +79222049227 или по электронной почте:
+                                    <a href="mailto:info@ip34.ru">info@ip34.ru</a> .
+                                    Кроме этого, вы можете указать ваши контактные данные и мы с вами свяжемся.
+                                </span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="inputPhone">Номер телефона</label>
+                                <input type="text" class="form-control input-phone" id="inputPhone" placeholder="Укажите номер телефона">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="inputEmail">Email адрес</label>
+                                <input name="inputEmail" type="email" class="form-control" id="inputEmail" placeholder="Введите email">
+                            </div>
+                            {% if email %}
+                                {{ email }}
+                            {% endif %}
+                            <p class="text-center" id="error-div"></p>
+                            {% if text_error %}
+                                <p class="bg-danger">{{ text_error }}</p>
+                            {% endif %}
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                            <button type="button" class="btn btn-primary do-order-btn">Оформить заказ</button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+{% endfor %}

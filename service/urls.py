@@ -10,5 +10,6 @@ urlpatterns = patterns('',
     # url(r'^service/(?P<service_id>\d+)/$', views.more, name='more'),
     url(r'^callback$', views.callback, name='callback'),
     url(r'^submit$', views.submit, name='submit'),
+    url(r'^submitip34$', views.submit, name='submitip34'),
     url(r'^$', views.home)
 )

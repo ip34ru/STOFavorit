@@ -1,6 +1,6 @@
 {% for service in services %}
 
-    <div class="modal fade bs-example-modal-lg" id="modalOrder{{ service.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade bs-example-modal-lg" id="modalOrder{% if service.id == 10 %}9999{% else %}{{ service.id }}{% endif %}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
 
